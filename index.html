@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Kata-Kata Creator — Stroke & Rasio Presisi</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+            background: linear-gradient(145deg, #1e2a3a 0%, #0f1724 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(2px);
+            border-radius: 2.5rem;
+            padding: 24px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            color: #f5efdc;
+        }
+        .sub {
+            text-align: center;
+            color: #cbd5e1;
+            margin-bottom: 32px;
+            font-style: italic;
+        }
+
+        .editor-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+        }
+
+        .control-panel {
+            flex: 1.2;
+            min-width: 280px;
+            background: rgba(30, 30, 45, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 1.8rem;
+            padding: 22px;
+            border: 1px solid rgba(255,255,240,0.2);
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 500;
+            color: #f0e6d0;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        textarea, input[type="text"], input[type="color"], select, input[type="number"] {
+            width: 100%;
+            padding: 12px 14px;
+            background: #1e1f2c;
+            border: 1px solid #4a4e6b;
+            border-radius: 1.2rem;
+            color: #f8f4e8;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .file-label {
+            background: #2a2f3f;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 500;
+            border: 1px solid #f3b33d70;
+        }
+        .file-label:hover {
+            background: #f3b33d;
+            color: #1e1f2c;
+        }
+        input[type="file"] { display: none; }
+
+        .btn-reset-bg {
+            background: #3a2e28;
+            margin-top: 10px;
+            text-align: center;
+            padding: 8px;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #ffd89a;
+        }
+
+        .size-buttons {
+            display: flex;
+            gap: 14px;
+            margin-top: 8px;
+        }
+        .size-btn {
+            flex: 1;
+            background: #2c3348;
+            padding: 10px 0;
+            text-align: center;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .size-btn.active {
+            background: #f3b33d;
+            color: #1e1f2c;
+            box-shadow: 0 0 8px gold;
+        }
+
+        .res-select {
+            background: #1e1f2c;
+            padding: 10px;
+            border-radius: 2rem;
+            font-weight: bold;
+        }
+
+        .stroke-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .stroke-group input[type="number"] {
+            width: 80px;
+        }
+        .stroke-group input[type="color"] {
+            width: 60px;
+            height: 48px;
+        }
+
+        .preview-panel {
+            flex: 1.8;
+            min-width: 340px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 1.8rem;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-preview {
+            width: 100%;
+            border-radius: 2rem;
+            padding: 2rem 1.8rem;
+            transition: all 0.2s;
+            text-align: center;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* Rasio akan diatur via JS */
+        }
+
+        .quote-text {
+            font-size: 1.7rem;
+            line-height: 1.4;
+            font-weight: 500;
+            margin-bottom: 1.8rem;
+            white-space: pre-wrap;
+            font-family: 'Times New Roman', 'Georgia', serif;
+        }
+
+        .quote-author {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            border-top: 1px dashed currentColor;
+            display: inline-block;
+            padding-top: 12px;
+        }
+
+        .download-btn {
+            margin-top: 28px;
+            background: #f3b33d;
+            border: none;
+            padding: 12px 28px;
+            font-weight: bold;
+            border-radius: 3rem;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #1e1f2c;
+        }
+        .download-btn:hover {
+            background: #ffca6f;
+            transform: scale(1.02);
+        }
+
+        @media (max-width: 760px) {
+            .quote-text { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h1>✨ KATA-KATA DENGAN STROKE ✨</h1>
+    <div class="sub">“outline tegas, rasio presisi, unduh dalam berbagai resolusi”</div>
+
+    <div class="editor-preview">
+        <div class="control-panel">
+            <div class="control-group">
+                <label>📝 Kata-kata :</label>
+                <textarea id="quoteInput">Kadang yang paling berisik di kepala lo cuma gema dari masa lalu — biarin aja, ntar ilang sendiri kalau lo gak sambut.</textarea>
+            </div>
+            <div class="control-group">
+                <label>✍️ Nama pembuat :</label>
+                <input type="text" id="authorName" value="Zime">
+            </div>
+            <div class="control-group">
+                <label>🎨 Warna Font :</label>
+                <input type="color" id="fontColor" value="#FDF6E3">
+            </div>
+            <div class="control-group">
+                <label>✒️ Stroke (outline) teks :</label>
+                <div class="stroke-group">
+                    <label style="display:inline;">Tebal (px):</label>
+                    <input type="number" id="strokeWidth" min="0" max="10" step="0.5" value="1.5">
+                    <label style="display:inline;">Warna:</label>
+                    <input type="color" id="strokeColor" value="#000000">
+                </div>
+                <small style="color:#aaa;">Atur ketebalan dan warna outline di sekitar huruf</small>
+            </div>
+            <div class="control-group">
+                <label>🖌️ Warna Latar (solid) :</label>
+                <input type="color" id="bgColor" value="#1E2A3A">
+            </div>
+            <div class="control-group">
+                <label>🖼️ Pakai foto dari galeri (latar) :</label>
+                <label class="file-label" for="bgImageInput">📁 Pilih foto</label>
+                <input type="file" id="bgImageInput" accept="image/*">
+                <div class="btn-reset-bg" id="resetBgBtn">↺ Reset ke warna solid</div>
+            </div>
+            <div class="control-group">
+                <label>📏 Tampilan preview (lebar kartu) :</label>
+                <div class="size-buttons">
+                    <div class="size-btn" data-size="short">Pendek</div>
+                    <div class="size-btn active" data-size="medium">Sedang</div>
+                    <div class="size-btn" data-size="long">Panjang</div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label>📸 Rasio & resolusi unduhan (langsung ubah proporsi preview) :</label>
+                <select id="resSelect" class="res-select">
+                    <option value="1080,1440">1080 × 1440 px (rasio 3:4)</option>
+                    <option value="1200,1600">1200 × 1600 px (rasio 3:4)</option>
+                    <option value="1500,2000">1500 × 2000 px (rasio 3:4)</option>
+                    <option value="3000,4000">3000 × 4000 px (rasio 3:4)</option>
+                </select>
+                <small style="color:#aaa;">*Preview card akan mengikuti rasio ini secara langsung</small>
+            </div>
+        </div>
+
+        <div class="preview-panel">
+            <div class="card-preview" id="previewCard">
+                <div class="quote-text" id="previewText">Kadang yang paling berisik di kepala lo cuma gema dari masa lalu — biarin aja, ntar ilang sendiri kalau lo gak sambut.</div>
+                <div class="quote-author" id="previewAuthor">— Zime</div>
+            </div>
+            <button class="download-btn" id="downloadCardBtn">📸 Unduh Gambar (resolusi pilih)</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+    (function(){
+        const quoteInput = document.getElementById('quoteInput');
+        const authorInput = document.getElementById('authorName');
+        const fontColorPicker = document.getElementById('fontColor');
+        const strokeWidthInput = document.getElementById('strokeWidth');
+        const strokeColorInput = document.getElementById('strokeColor');
+        const bgColorPicker = document.getElementById('bgColor');
+        const bgImageInput = document.getElementById('bgImageInput');
+        const resetBgBtn = document.getElementById('resetBgBtn');
+        const previewCard = document.getElementById('previewCard');
+        const previewText = document.getElementById('previewText');
+        const previewAuthor = document.getElementById('previewAuthor');
+        const downloadBtn = document.getElementById('downloadCardBtn');
+        const resSelect = document.getElementById('resSelect');
+
+        let currentSize = 'medium';
+        let currentBgImageUrl = null;
+
+        // Fungsi update stroke pada teks
+        function updateStroke() {
+            const width = parseFloat(strokeWidthInput.value);
+            const color = strokeColorInput.value;
+            if (width > 0) {
+                previewText.style.webkitTextStroke = `${width}px ${color}`;
+                previewText.style.textStroke = `${width}px ${color}`; // fallback
+                // Stroke bisa membuat teks agak tipis, kita tambahkan sedikit text-shadow agar tetap terbaca
+                previewText.style.textShadow = 'none';
+            } else {
+                previewText.style.webkitTextStroke = 'none';
+                previewText.style.textStroke = 'none';
+            }
+        }
+
+        // Update semua tampilan teks, warna, background, stroke, dan rasio
+        function updatePreview() {
+            let rawText = quoteInput.value;
+            if (rawText.trim() === '') rawText = 'Tulis kata-katamu disini...';
+            previewText.innerText = rawText;
+            let authorRaw = authorInput.value.trim();
+            if (authorRaw === '') authorRaw = 'Tanpa nama';
+            previewAuthor.innerText = `— ${authorRaw}`;
+            previewText.style.color = fontColorPicker.value;
+            previewAuthor.style.color = fontColorPicker.value;
+            
+            // Stroke
+            updateStroke();
+
+            // Background
+            if (currentBgImageUrl) {
+                previewCard.style.backgroundImage = `url('${currentBgImageUrl}')`;
+                previewCard.style.backgroundSize = 'cover';
+                previewCard.style.backgroundColor = 'transparent';
+            } else {
+                previewCard.style.backgroundImage = 'none';
+                previewCard.style.backgroundColor = bgColorPicker.value;
+            }
+
+            applySizeMode();
+            applyAspectRatio(); // terapkan rasio dari resolusi
+        }
+
+        function applySizeMode() {
+            if (currentSize === 'short') {
+                previewCard.style.padding = '1.4rem 1rem';
+                previewText.style.fontSize = '1.2rem';
+                previewAuthor.style.fontSize = '0.9rem';
+            } else if (currentSize === 'medium') {
+                previewCard.style.padding = '2rem 1.8rem';
+                previewText.style.fontSize = '1.7rem';
+                previewAuthor.style.fontSize = '1.1rem';
+            } else {
+                previewCard.style.padding = '2.5rem 2rem';
+                previewText.style.fontSize = '1.95rem';
+                previewAuthor.style.fontSize = '1.2rem';
+            }
+            previewCard.style.width = '100%';
+            previewCard.style.margin = '0 auto';
+        }
+
+        // Mengatur rasio preview card berdasarkan resolusi yang dipilih
+        function applyAspectRatio() {
+            const [targetW, targetH] = resSelect.value.split(',').map(Number);
+            const ratio = targetH / targetW; // tinggi / lebar
+            previewCard.style.aspectRatio = `${targetW} / ${targetH}`;
+            // Untuk memastikan konten tidak overflow, kita biarkan scroll jika perlu? Tidak, teks akan menyesuaikan dengan padding.
+            // Karena aspect ratio diterapkan, card akan memiliki tinggi proporsional.
+            // Agar teks tetap rapi, kita beri overflow-y: auto jika konten kepanjangan? Tapi lebih baik tidak, user bisa kurangi teks.
+            previewCard.style.overflow = 'auto';
+        }
+
+        // Event listeners
+        quoteInput.addEventListener('input', updatePreview);
+        authorInput.addEventListener('input', updatePreview);
+        fontColorPicker.addEventListener('input', updatePreview);
+        strokeWidthInput.addEventListener('input', updatePreview);
+        strokeColorInput.addEventListener('input', updatePreview);
+        
+        bgColorPicker.addEventListener('input', function(){
+            if(currentBgImageUrl) {
+                if(confirm('Hapus foto latar dan pakai warna solid?')){
+                    resetBgImage();
+                }
+            } else updatePreview();
+        });
+
+        function resetBgImage() {
+            currentBgImageUrl = null;
+            bgImageInput.value = '';
+            updatePreview();
+        }
+        resetBgBtn.addEventListener('click', resetBgImage);
+        bgImageInput.addEventListener('change', function(e){
+            const file = e.target.files[0];
+            if(file){
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    currentBgImageUrl = ev.target.result;
+                    updatePreview();
+                };
+                reader.readAsDataURL(file);
+            } else resetBgImage();
+        });
+
+        // Tombol ukuran (pendek/sedang/panjang) hanya mengubah padding & font size, tidak mengubah rasio
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', function(){
+                currentSize = this.getAttribute('data-size');
+                document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));
+                this.classList.add('active');
+                applySizeMode();
+                updatePreview(); // refresh agar stroke dll tetap
+            });
+        });
+
+        // Saat ganti resolusi, update rasio langsung
+        resSelect.addEventListener('change', function() {
+            applyAspectRatio();
+            // Tidak perlu updatePreview penuh, cukup terapkan ulang padding/font agar konsisten
+            applySizeMode();
+            // Tetap pertahankan stroke & warna
+        });
+
+        // Fungsi unduh dengan resolusi persis (tanpa peregangan karena preview sudah sesuai rasio)
+        async function downloadWithResolution() {
+            const [targetW, targetH] = resSelect.value.split(',').map(Number);
+            const element = previewCard;
+            
+            // Dapatkan ukuran aktual element setelah layout
+            const rect = element.getBoundingClientRect();
+            const currentWidth = rect.width;
+            const currentHeight = rect.height;
+            
+            // Hitung scale yang diperlukan agar lebar mencapai targetW
+            let scale = targetW / currentWidth;
+            // Capture dengan scale tersebut
+            try {
+                const canvas = await html2canvas(element, {
+                    scale: scale,
+                    backgroundColor: null,
+                    useCORS: true,
+                    logging: false
+                });
+                // Canvas sekarang berukuran currentWidth*scale x currentHeight*scale
+                // Tapi karena aspek rasio sudah sama (preview pakai rasio yang sama), maka tinggal resize ke targetW x targetH
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = targetW;
+                finalCanvas.height = targetH;
+                const ctx = finalCanvas.getContext('2d');
+                ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, targetW, targetH);
+                const link = document.createElement('a');
+                let name = authorInput.value.trim() || 'kata';
+                name = name.replace(/\s+/g, '_');
+                link.download = `kata_${name}_${targetW}x${targetH}.png`;
+                link.href = finalCanvas.toDataURL('image/png');
+                link.click();
+            } catch(err) {
+                alert("Gagal generate gambar: " + err);
+            }
+        }
+
+        downloadBtn.addEventListener('click', downloadWithResolution);
+        
+        // Inisialisasi
+        applyAspectRatio();
+        updatePreview();
+    })();
+</script>
+</body>
+      </html>
